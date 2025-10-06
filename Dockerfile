@@ -10,8 +10,9 @@ RUN apt-get update && apt-get install -y \
   librabbitmq-dev \
   && rm -rf /var/lib/apt/lists/*
 
-# Устанавливаем расширение PHP для работы с RabbitMQ
-RUN pecl install amqp \
+# Устанавливаем расширения PHP
+RUN docker-php-ext-install sockets \
+  && pecl install amqp \
   && docker-php-ext-enable amqp
 
 # Скачиваем установщик Composer
@@ -27,15 +28,12 @@ COPY ./docker/php/custom.ini /usr/local/etc/php/conf.d/custom.ini
 # Копируем файлы приложения
 COPY . .
 
-# Устанавливаем зависимости Composer
-RUN composer install --optimize-autoloader --no-dev
-
 # Меняем владельца файлов на www-data, чтобы FPM мог писать в логи и кэш
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 
 # Копирование composer файлы и установка зависимостей
 COPY composer.json composer.lock ./
-RUN composer install --no-dev --optimize-autoloader --prefer-dist
+RUN composer install --optimize-autoloader --prefer-dist
 
 # ---------------- STAGE: runtime ----------------
 FROM php:8.4.12-fpm AS runner

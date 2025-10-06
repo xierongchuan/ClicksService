@@ -44,15 +44,18 @@ services:
         ports:
             - "8123:8123"
             - "9000:9000"
+        environment:
+            - CLICKHOUSE_USER=${CLICKHOUSE_USER}
+            - CLICKHOUSE_PASSWORD=${CLICKHOUSE_PASSWORD}
         volumes:
             - clickhouse_data:/var/lib/clickhouse/
-            - ./docker/clickhouse/init.sql:/docker-entrypoint-initdb.d/init.sql
 
     # Laravel Queue Worker
     worker:
         build:
             context: .
             dockerfile: Dockerfile
+            target: runner
         container_name: clicks-service-worker
         command: php artisan queue:work rabbitmq --sleep=3 --tries=3
         volumes:
