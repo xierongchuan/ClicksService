@@ -12,6 +12,7 @@
     "php": "^8.2",
     "laravel/framework": "^12.0",
     "laravel/tinker": "^2.10.1",
+    "psr/container": "^2.0",
     "php-amqp/php-amqp": "^2.1",
     "vladimir-yuldashev/laravel-queue-rabbitmq": "^14.3"
   },
