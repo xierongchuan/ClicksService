@@ -37,3 +37,23 @@ docker compose up -d
 ```bash
 docker compose run --rm clicks-service vendor/bin/phpunit tests/
 ```
+
+## Схема работы
+### Клики
+1. Nginx.
+2. Laravel Webhook (/api/clicks)
+  1. Валидация, проверка подписи
+  2. Задание в очередь
+  3. Ответ 202 Accepted
+3. RabbitMQ
+4. Laravel Worker
+  1. Чтение 1000 из очереди
+  2. Формирует batch запрос
+  3. Вставляет пачкой в ClickHouse
+
+### Статистика
+1. Nginx.
+2. Laravel (/api/stats)
+  1. Валидация параметров
+  2. Запрос в ClickHouse
+  3. Возврат результата
